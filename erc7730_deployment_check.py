@@ -10,6 +10,15 @@ ADDRESS = re.compile(r"0x[0-9a-fA-F]{40}\Z")
 UINT256_MAX = (1 << 256) - 1
 
 
+def _unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key!r}")
+        result[key] = value
+    return result
+
+
 def check(descriptor):
     context = descriptor.get("context", {})
     if not isinstance(context, dict):
@@ -56,8 +65,11 @@ def main():
         print(f"Usage: {Path(sys.argv[0]).name} DESCRIPTOR.json", file=sys.stderr)
         return 2
     try:
-        descriptor = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
+        descriptor = json.loads(
+            Path(sys.argv[1]).read_text(encoding="utf-8"),
+            object_pairs_hook=_unique_object,
+        )
+    except (OSError, ValueError) as error:
         print(f"Cannot read descriptor: {error}", file=sys.stderr)
         return 2
     if not isinstance(descriptor, dict):
