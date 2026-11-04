@@ -7,6 +7,7 @@ from pathlib import Path
 
 
 ADDRESS = re.compile(r"0x[0-9a-fA-F]{40}\Z")
+UINT256_MAX = (1 << 256) - 1
 
 
 def check(descriptor):
@@ -32,8 +33,8 @@ def check(descriptor):
 
         chain_id = deployment.get("chainId")
         address = deployment.get("address")
-        if isinstance(chain_id, bool) or not isinstance(chain_id, int) or chain_id <= 0:
-            messages.append(f"deployments[{index}].chainId must be a positive integer.")
+        if isinstance(chain_id, bool) or not isinstance(chain_id, int) or not 0 < chain_id <= UINT256_MAX:
+            messages.append(f"deployments[{index}].chainId must be a positive uint256 integer.")
             valid = False
         if not isinstance(address, str) or not ADDRESS.fullmatch(address):
             messages.append(f"deployments[{index}].address must be a 20-byte 0x-prefixed address.")
