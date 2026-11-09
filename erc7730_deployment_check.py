@@ -20,6 +20,8 @@ def _unique_object(pairs):
 
 
 def check(descriptor):
+    if not isinstance(descriptor, dict):
+        return ["descriptor root must be a JSON object."], False
     context = descriptor.get("context", {})
     if not isinstance(context, dict):
         return ["context must be a JSON object."], False
