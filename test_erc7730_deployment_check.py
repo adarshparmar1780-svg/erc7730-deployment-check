@@ -22,6 +22,11 @@ class DeploymentCheckTests(unittest.TestCase):
         self.assertFalse(valid)
         self.assertTrue(any("duplicates a chain and address" in message for message in messages))
 
+    def test_rejects_zero_deployment_address(self):
+        messages, valid = check({"context": {"contract": {"deployments": [{"chainId": 1, "address": "0x" + "0" * 40}]}}})
+        self.assertFalse(valid)
+        self.assertTrue(any("must not be the zero address" in message for message in messages))
+
     def test_rejects_boolean_chain_id(self):
         messages, valid = check({"context": {"contract": {"deployments": [{"chainId": True, "address": "0x1111111111111111111111111111111111111111"}]}}})
         self.assertFalse(valid)

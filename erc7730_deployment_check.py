@@ -50,6 +50,10 @@ def check(descriptor):
         if not isinstance(address, str) or not ADDRESS.fullmatch(address):
             messages.append(f"deployments[{index}].address must be a 20-byte 0x-prefixed address.")
             valid = False
+        if isinstance(address, str) and address.lower() == "0x" + "0" * 40:
+            messages.append(f"deployments[{index}].address must not be the zero address.")
+            valid = False
+
         if isinstance(chain_id, int) and not isinstance(chain_id, bool) and isinstance(address, str):
             key = (chain_id, address.lower())
             if key in seen:
